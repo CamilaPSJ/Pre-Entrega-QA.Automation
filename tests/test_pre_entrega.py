@@ -36,7 +36,7 @@ def test_01_login(navegador):
 
 
 
-def test_02_en_inventario (navegador):
+def test_02_inventario_esta (navegador):
     titulo = navegador.title
     # driver.title es una prop de selenium y busca el title en la seccion head
     sub_titulo = navegador.find_element (By.CLASS_NAME, "title").text
@@ -49,13 +49,13 @@ def test_02_en_inventario (navegador):
 
 
 #CONSIGNA 2:
-def test_03_ver_productos(navegador):
+def test_03_productos_ver(navegador):
     objeto_inventario = navegador.find_elements(By.CLASS_NAME, 'inventory_item')
 
     assert len(objeto_inventario) > 0 , 'ERROR: No se encuentran productos'
 
 
-def test_04_mostrar_primer_producto(navegador):
+def test_04_productos_mostrar_primero(navegador):
     objeto_inventario = navegador.find_elements(By.CLASS_NAME, 'inventory_item')
     primer_producto = objeto_inventario[0]
 
@@ -67,7 +67,7 @@ def test_04_mostrar_primer_producto(navegador):
     assert nombre_producto != '', 'ERROR: Este producto no tiene un nombre ingresado'
     assert precio_producto != '', 'ERROR: Este producto no tiene un precio ingresado'
 
-def test_05_agregar_productos_carrito (navegador):
+def test_05_carrito_agregar_productos(navegador):
 
     boton_agregar = navegador.find_element(By.XPATH, '(//div[@class="inventory_item"])[1]//button')
     boton_agregar.click()
@@ -76,4 +76,37 @@ def test_05_agregar_productos_carrito (navegador):
     boton_remover = navegador.find_element(By.XPATH, '(//div[@class="inventory_item"])[1]//button')
 
     assert boton_remover.text.lower() == 'remove', 'ERROR: El boton no se actualizo a "Remove"'
+
+
+def test_06_interfaz_validar(navegador):
+    boton_menu = navegador.find_element(By.CLASS_NAME, 'bm-burger-button')
+    boton_filtro = navegador.find_element(By.CLASS_NAME, 'product_sort_container')
+
+    assert boton_menu.is_displayed(), 'ERROR: No se puede ver el menu'
+    assert boton_filtro.is_displayed(), 'ERROR: No se encuentra el filtro'
+#is_displayesd aca es booleano, si se activa va, si no va el error.
+
+
+
+def test_07_carrito_verificar_contador(navegador):
+    espera = WebDriverWait(navegador, 10)
+
+    contador_carrito = espera.until(
+        EC.visibility_of_element_located((By.CLASS_NAME, 'shopping_cart_badge'))
+    ).text
+
+    assert contador_carrito == "1", f'ERROR: Se esperaba 1, obtuvo {contador_carrito}'
+
+
+def test_08_carrito_navegar(navegador):
+    navegador.find_element(By.CLASS_NAME, 'shopping_cart_link').click()
+    assert "/cart.html" in navegador.current_url , "ERROR: No se encuentra en /cart.html"
+
+
+def test_09_carrito_comprobar_productos(navegador):
+    productos_posibles = ['Sauce Labs Backpack' , 'Sauce Labs Bike Light' , 'Sauce Labs Bolt T-Shirt' , 'Sauce Labs Fleece Jacket' , 'Sauce Labs Onesie' , 'Test.allTheThings() T-Shirt (Red)']
+    producto_nombre_carrito = navegador.find_element(By.CLASS_NAME, 'inventory_item_name').text
+
+    assert producto_nombre_carrito in productos_posibles, f'ERROR: {producto_nombre_carrito} no se encuentra en la lista'
+
     
