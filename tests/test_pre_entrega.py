@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
     
 
-#CONSIGNA 1:
+#CONSIGNA 1 y pedacin de la C2:
 def test_01_login(navegador):
     navegador.get("https://www.saucedemo.com/")
     espera = WebDriverWait(navegador, 10) 
@@ -34,6 +34,8 @@ def test_01_login(navegador):
     espera.until(EC.url_contains("/inventory.html"))
     assert "/inventory" in navegador.current_url, "ERROR: No se encuentra en /inventory.html"
 
+
+
 def test_02_en_inventario (navegador):
     titulo = navegador.title
     # driver.title es una prop de selenium y busca el title en la seccion head
@@ -45,4 +47,33 @@ def test_02_en_inventario (navegador):
 
     assert sub_titulo == "Products", f'ERROR: Se esperaba obtener el titulo de seccion "Products", se obtuvo:{sub_titulo}'
 
+
+#CONSIGNA 2:
+def test_03_ver_productos(navegador):
+    objeto_inventario = navegador.find_elements(By.CLASS_NAME, 'inventory_item')
+
+    assert len(objeto_inventario) > 0 , 'ERROR: No se encuentran productos'
+
+
+def test_04_mostrar_primer_producto(navegador):
+    objeto_inventario = navegador.find_elements(By.CLASS_NAME, 'inventory_item')
+    primer_producto = objeto_inventario[0]
+
+    nombre_producto = primer_producto.find_elements(By.CLASS_NAME, 'inventory_item_name')
+    precio_producto = primer_producto.find_elements(By.CLASS_NAME, 'inventory_item_price')
+
+    print(f'Nombre: {nombre_producto} |  Nombre: {precio_producto}')
+
+    assert nombre_producto != '', 'ERROR: Este producto no tiene un nombre ingresado'
+    assert precio_producto != '', 'ERROR: Este producto no tiene un precio ingresado'
+
+def test_05_agregar_productos_carrito (navegador):
+
+    boton_agregar = navegador.find_element(By.XPATH, '(//div[@class="inventory_item"])[1]//button')
+    boton_agregar.click()
+
+    # Volvemos a buscar el botón (ahora debería decir "Remove")
+    boton_remover = navegador.find_element(By.XPATH, '(//div[@class="inventory_item"])[1]//button')
+
+    assert boton_remover.text.lower() == 'remove', 'ERROR: El boton no se actualizo a "Remove"'
     
